@@ -41,8 +41,6 @@ public:
 
     void reset();
 
-    void new_start(float f);
-
     float get_de();
 
     //获取编码结果
@@ -153,7 +151,7 @@ bool Auto_SDT_Coder::update_door(float point) {
         points.push_back(point);
         auto_sdt.update_min(point);
         auto_sdt.update_max(point);
-        return false;
+        return true;
     }
     float e = ds - compute_expectation();
     if(e >= ds * dt)
@@ -163,14 +161,13 @@ bool Auto_SDT_Coder::update_door(float point) {
     if(abs(e) > 2 * ds * dt)
         //TODO 此处抛出异常，说明de的选择不合适，需要重新选择de
         ;
-    return true;
+    return false;
 }
 
-void Auto_SDT_Coder::new_start(float f) {
-    auto_sdt.reset();
-    start(f);
-}
-
+/**
+ * 读取门的大小
+ * @return 
+ */
 float Auto_SDT_Coder::get_de() {
     return de;
 }

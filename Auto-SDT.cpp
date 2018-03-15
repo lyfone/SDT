@@ -8,7 +8,7 @@
  * 构造函数初始化
  */
 Auto_SDT::Auto_SDT(){
-    step_dis = 0;
+    counter = 0;
     start_point = 0.0;
     end_point = 0.0;
     max = 0.0;
