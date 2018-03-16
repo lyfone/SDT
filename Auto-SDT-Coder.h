@@ -27,7 +27,7 @@ private:
     Auto_SDT auto_sdt;
 
     float compute_expectation();//计算期望
-    bool update_k(float point); //更新上下斜率k值
+    bool update_k(float point, int step); //更新上下斜率k值
 
 public:
     //构造函数
@@ -44,12 +44,12 @@ public:
     float get_de();
 
     //获取编码结果
-    Auto_SDT get_Auto_SDT_result(){
+    Auto_SDT get_Auto_SDT_result() {
         return auto_sdt;
     }
 
     //获取编码的数据点集合
-    vector<float> get_points(){
+    vector<float> get_points() {
         return points;
     }
 };
@@ -89,11 +89,11 @@ void Auto_SDT_Coder::start(float point) {
  * @param point
  * @return
  */
-bool Auto_SDT_Coder::update_k(float point) {
-    float new_up_k = point - auto_sdt.get_start_point() - de;
+bool Auto_SDT_Coder::update_k(float point, int step) {
+    float new_up_k = (point - auto_sdt.get_start_point() - de) / step;
     up_k = up_k > new_up_k ? up_k : new_up_k;
 
-    float new_down_k = point - auto_sdt.get_start_point() + de;
+    float new_down_k = (point - auto_sdt.get_start_point() + de) / step;
     down_k = down_k < new_down_k ? down_k : new_down_k;
 
     return up_k >= down_k;
@@ -105,7 +105,7 @@ bool Auto_SDT_Coder::update_k(float point) {
  */
 float Auto_SDT_Coder::compute_expectation() {
     float start = auto_sdt.get_start_point();
-    float dy = (auto_sdt.get_end_point() - auto_sdt.get_end_point())/(auto_sdt.get_step_dis() - 1);
+    float dy = (auto_sdt.get_end_point() - auto_sdt.get_end_point()) / (auto_sdt.get_step_dis() - 1);
     float sum = 0.0;
     int pos = 0;
     for (auto it = points.begin(); it != points.end(); it++) {
@@ -122,8 +122,8 @@ float Auto_SDT_Coder::compute_expectation() {
  * @param b
  * @return
  */
-float min(float a, float b){
-    if(a < b)
+float min(float a, float b) {
+    if (a < b)
         return a;
     return b;
 }
@@ -134,8 +134,8 @@ float min(float a, float b){
  * @param b
  * @return
  */
-float max(float a, float b){
-    if(a > b)
+float max(float a, float b) {
+    if (a > b)
         return a;
     return b;
 }
@@ -145,7 +145,7 @@ float max(float a, float b){
  * @param point
  */
 bool Auto_SDT_Coder::update_door(float point) {
-    if (!update_k(point)) {
+    if (!update_k(point,auto_sdt.get_counts())) {
         auto_sdt.set_end_point(point);
         auto_sdt.inc();
         points.push_back(point);
@@ -154,11 +154,11 @@ bool Auto_SDT_Coder::update_door(float point) {
         return true;
     }
     float e = ds - compute_expectation();
-    if(e >= ds * dt)
-        de = min(max_de,de + (e * step_de) / (ds * dt));
-    if(e <= -ds * dt)
-        de = max(min_de,de - (e * step_de) / (ds * dt));
-    if(abs(e) > 2 * ds * dt)
+    if (e >= ds * dt)
+        de = min(max_de, de + (e * step_de) / (ds * dt));
+    if (e <= -ds * dt)
+        de = max(min_de, de - (e * step_de) / (ds * dt));
+    if (abs(e) > 2 * ds * dt)
         //TODO 此处抛出异常，说明de的选择不合适，需要重新选择de
         ;
     return false;
@@ -166,7 +166,7 @@ bool Auto_SDT_Coder::update_door(float point) {
 
 /**
  * 读取门的大小
- * @return 
+ * @return
  */
 float Auto_SDT_Coder::get_de() {
     return de;
