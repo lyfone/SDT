@@ -105,7 +105,7 @@ bool Auto_SDT_Coder::update_k(float point, int step) {
  */
 float Auto_SDT_Coder::compute_expectation() {
     float start = auto_sdt.get_start_point();
-    float dy = (auto_sdt.get_end_point() - auto_sdt.get_end_point()) / (auto_sdt.get_step_dis() - 1);
+    float dy = (auto_sdt.get_end_point() - auto_sdt.get_end_point()) / (auto_sdt.get_counts() - 1);
     float sum = 0.0;
     int pos = 0;
     for (auto it = points.begin(); it != points.end(); it++) {
